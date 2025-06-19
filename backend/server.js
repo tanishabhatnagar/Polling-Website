@@ -1,3 +1,4 @@
+// server.js
 const express = require("express");
 const http = require("http");
 const cors = require("cors");
@@ -8,7 +9,7 @@ const server = http.createServer(app);
 
 app.use(
   cors({
-    origin: "intervuepoll.netlify.app", 
+    origin: "*", // Replace with "https://intervuepoll.netlify.app" in production
     methods: ["GET", "POST"],
   })
 );
@@ -17,47 +18,46 @@ app.use(express.json());
 
 const io = new Server(server, {
   cors: {
-    origin: "*", // Allow all origins for dev
+    origin: "*", // Replace with actual frontend URL in production
     methods: ["GET", "POST"],
   },
 });
 
-// 🧠 Poll state
+// Poll state
 let currentQuestion = null;
 let pollResults = {};
-let pollHistory = []; // ✅ New array to store history
+let pollHistory = [];
+let chatHistory = [];
 
 io.on("connection", (socket) => {
   console.log("🔌 A user connected:", socket.id);
 
-  // Send current question immediately if available
+  // 🔁 Send current poll state
   if (currentQuestion) {
     socket.emit("new-question", currentQuestion);
     socket.emit("poll-update", pollResults);
   }
 
-  // 📤 Dynamic fetch of current data
+  // 🧠 Sync on load
   socket.on("get-current-data", () => {
     setTimeout(() => {
       if (currentQuestion) {
         socket.emit("new-question", currentQuestion);
         socket.emit("poll-update", pollResults);
       }
-    }, 100); // delay to avoid race condition
+    }, 100);
   });
 
-  
-  // 📜 Provide poll history to client
+  // 📜 Provide poll history
   socket.on("get-poll-history", () => {
     socket.emit("poll-history", pollHistory);
   });
 
-  // 📝 Teacher creates a new question
+  // 📝 Teacher creates new question
   socket.on("create-question", (questionData) => {
     currentQuestion = questionData;
     pollResults = {};
 
-    // ✅ Store in history with timestamp
     pollHistory.push({
       ...questionData,
       createdAt: new Date().toISOString(),
@@ -66,14 +66,24 @@ io.on("connection", (socket) => {
     io.emit("new-question", currentQuestion);
   });
 
-  // 🗳️ Students submit answers
+  // 🗳️ Student submits answer
   socket.on("submit-answer", (answer) => {
     const trimmed = answer.trim();
     pollResults[trimmed] = (pollResults[trimmed] || 0) + 1;
     io.emit("poll-update", pollResults);
   });
 
-  // ❌ On disconnect
+  // 💬 Chat message handling
+  socket.on("chat-message", (message) => {
+    chatHistory.push(message);
+    io.emit("chat-message", message); // send to all clients
+  });
+
+  socket.on("get-chat-history", () => {
+    socket.emit("chat-history", chatHistory);
+  });
+
+  // 🔌 Disconnect
   socket.on("disconnect", () => {
     console.log("❌ User disconnected:", socket.id);
   });

@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import socket from "../socket";
+import ChatWidget from "./ChatWidget";
+
 
 function CreateQuestionPage() {
   const navigate = useNavigate();
@@ -111,7 +113,8 @@ function CreateQuestionPage() {
               className="flex-1 border border-gray-300 px-3 py-2 rounded-md focus:outline-none focus:ring-1 focus:ring-secondary mr-3"
               required
             />
-            <div className="flex items-center space-x-2">
+            <div className="flex flex-wrap sm:flex-nowrap items-center gap-2 mt-2 sm:mt-0">
+
               <label className="text-sm font-medium">Correct?</label>
               <input
                 type="radio"
@@ -141,6 +144,9 @@ function CreateQuestionPage() {
           Ask the Poll
         </button>
       </form>
+
+      <ChatWidget name="Teacher" />
+
 
       {/* Feedback if empty */}
       {isFormEmpty && (

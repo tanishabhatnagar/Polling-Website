@@ -1,5 +1,9 @@
 import { useEffect, useState, useCallback } from "react";
 import socket from "../socket";
+import ChatWidget from "./ChatWidget";
+
+
+
 
 export default function StudentPollPage() {
   const [poll, setPoll] = useState(null);
@@ -84,7 +88,11 @@ export default function StudentPollPage() {
                 >
                   Submit Answer
                 </button>
+
+              
+
               </form>
+                <ChatWidget name={sessionStorage.getItem("studentName") || "Student"} />
             </>
           ) : (
             <>
@@ -121,6 +129,7 @@ export default function StudentPollPage() {
                 Green = correct answer, Red = your wrong selection
               </p>
             </>
+            
           )}
         </div>
       ) : (
@@ -152,6 +161,8 @@ export default function StudentPollPage() {
             This page will automatically update once the teacher starts a poll.
           </p>
         </div>
+
+        
       )}
     </div>
   );
