@@ -1,5 +1,4 @@
-import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useEffect, useState, useCallback } from "react";
 import socket from "../socket";
 
 export default function StudentPollPage() {
@@ -8,7 +7,13 @@ export default function StudentPollPage() {
   const [results, setResults] = useState(null);
   const [submitted, setSubmitted] = useState(false);
   const [remainingTime, setRemainingTime] = useState(null);
-  const navigate = useNavigate();
+
+  const submitAnswer = useCallback(() => {
+    if (selected) {
+      socket.emit("submit-answer", selected);
+    }
+    setSubmitted(true);
+  }, [selected]);
 
   useEffect(() => {
     socket.emit("get-current-data");
@@ -41,14 +46,7 @@ export default function StudentPollPage() {
       submitAnswer();
     }
     return () => clearInterval(timer);
-  }, [remainingTime, submitted]);
-
-  const submitAnswer = () => {
-    if (selected) {
-      socket.emit("submit-answer", selected);
-    }
-    setSubmitted(true);
-  };
+  }, [remainingTime, submitted, submitAnswer]);
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-bg text-dark p-6">
