@@ -6,7 +6,13 @@ const { Server } = require("socket.io");
 const app = express();
 const server = http.createServer(app);
 
-app.use(cors());
+app.use(
+  cors({
+    origin: "intervuepoll.netlify.app", 
+    methods: ["GET", "POST"],
+  })
+);
+
 app.use(express.json());
 
 const io = new Server(server, {
