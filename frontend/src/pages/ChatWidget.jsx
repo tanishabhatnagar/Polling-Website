@@ -29,13 +29,13 @@ export default function ChatWidget({ name }) {
   }, []);
 
   const handleSend = () => {
-    if (msg.trim()) {
-      const message = { sender: name, text: msg.trim() };
-      socket.emit("chat-message", message);
-      setMessages((prev) => [...prev, message]);
-      setMsg("");
-    }
-  };
+  if (msg.trim()) {
+    const message = { sender: name, text: msg.trim() };
+    socket.emit("chat-message", message);  // ✅ Only emit
+    setMsg("");                            // ✅ Clear input
+  }
+};
+
 
   return (
     <div className="fixed bottom-4 right-4 z-50">

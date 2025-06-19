@@ -1,6 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import socket from "../socket";
+import ChatWidget from "./ChatWidget";
 
 export default function TeacherResultsPage() {
   const navigate = useNavigate();
@@ -52,6 +53,8 @@ export default function TeacherResultsPage() {
                   <span>{opt}</span>
                   <span>{percent}% ({count} votes)</span>
                 </li>
+
+                
               );
             })}
           </ul>
@@ -72,6 +75,10 @@ export default function TeacherResultsPage() {
             >
               Back to Home
             </button>
+
+
+            
+             <ChatWidget name="Teacher" />
           </div>
         </div>
       ) : (
@@ -102,7 +109,10 @@ export default function TeacherResultsPage() {
           <p className="text-grayish">
             This page will automatically update once a poll starts.
           </p>
+          
         </div>
+
+        
       )}
     </div>
   );

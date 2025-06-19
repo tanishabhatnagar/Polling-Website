@@ -58,42 +58,45 @@ export default function StudentPollPage() {
         <div className="w-full max-w-md bg-white p-6 rounded-xl shadow-md">
           {!submitted ? (
             <>
-              <h2 className="text-2xl font-semibold text-primary mb-4">
-                {poll.question}
-              </h2>
-              <p className="text-sm text-gray-500 mb-2">
-                Time remaining: <span className="font-bold">{remainingTime}s</span>
-              </p>
-              <form className="space-y-3">
-                {poll.options.map((opt, i) => (
-                  <label
-                    key={i}
-                    className="flex items-center gap-2 p-2 rounded border border-gray-300 cursor-pointer hover:border-primary"
-                  >
-                    <input
-                      type="radio"
-                      name="answer"
-                      value={opt}
-                      checked={selected === opt}
-                      onChange={() => setSelected(opt)}
-                      className="accent-accent"
-                    />
-                    <span>{opt}</span>
-                  </label>
-                ))}
-                <button
-                  type="button"
-                  onClick={submitAnswer}
-                  className="w-full bg-primary hover:bg-secondary text-white px-4 py-2 rounded-lg mt-4 font-semibold"
-                >
-                  Submit Answer
-                </button>
+  <h2 className="text-2xl font-semibold text-primary mb-4">
+    Live Results
+  </h2>
+  <ul className="space-y-2">
+    {poll.options.map((opt, i) => {
+      const count = results?.[opt] || 0;
+      const total = Object.values(results || {}).reduce((sum, val) => sum + val, 0);
+      const percent = total ? ((count / total) * 100).toFixed(1) : 0;
 
-              
+      const isCorrect = opt === poll.correctAnswer;
+      const isSelected = opt === selected;
 
-              </form>
-                <ChatWidget name={sessionStorage.getItem("studentName") || "Student"} />
-            </>
+      let bgColor = "bg-gray-100";
+
+      if (isSelected && isCorrect) bgColor = "bg-green-100 border-green-500";
+      else if (isSelected && !isCorrect) bgColor = "bg-red-100 border-red-500";
+      else if (isCorrect) bgColor = "bg-green-50 border-green-400";
+
+      return (
+        <li
+          key={i}
+          className={`flex justify-between items-center px-4 py-2 border rounded ${bgColor}`}
+        >
+          <span>{opt}</span>
+          <span>{percent}% ({count} votes)</span>
+        </li>
+      );
+    })}
+  </ul>
+  <p className="mt-4 text-sm text-gray-600">
+    Green = correct answer, Red = your wrong selection
+  </p>
+
+  {/* ✅ Chat Widget under results */}
+  <div className="mt-6">
+    <ChatWidget name={sessionStorage.getItem("studentName") || "Student"} />
+  </div>
+</>
+
           ) : (
             <>
               <h2 className="text-2xl font-semibold text-primary mb-4">
