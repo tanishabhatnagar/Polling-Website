@@ -38,27 +38,3 @@ Backend: Express.js, Socket.io
 
 Others: sessionStorage, Local state management
 
-🚧 Setup Instructions
-
-1. Clone the repository
-
-git clone https://github.com/your-username/live-polling-system.git
-cd live-polling-system
-
-2. Run the Backend Server
-
-cd backend
-npm install
-node server.js
-
-Runs on: http://localhost:3001
-
-3. Run the Frontend App
-
-cd frontend
-npm install
-npm start
-
-Runs on: http://localhost:3000
-
-Ensure the backend is running before starting the frontend to enable socket communication.
