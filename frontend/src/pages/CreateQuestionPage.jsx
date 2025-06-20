@@ -63,10 +63,11 @@ function CreateQuestionPage() {
             onChange={(e) => setTimeLimit(Number(e.target.value))}
             className="border border-gray-300 px-3 py-2 rounded-md text-sm focus:ring-2 focus:ring-secondary"
           >
-            <option value={10}>10 sec</option>
+            
             <option value={20}>20 sec</option>
             <option value={30}>30 sec</option>
             <option value={45}>45 sec</option>
+            <option value={60}>60 sec</option>
           </select>
         </div>
 
