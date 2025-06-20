@@ -2,6 +2,11 @@
 
 A **real-time interactive live polling system** built using **React**, **Tailwind CSS**, **Express**, and **Socket.io**.
 
+<a href="https://youtu.be/ZYwIXxF2HCw" target="_blank">
+  <img src="https://img.youtube.com/vi/ZYwIXxF2HCw/hqdefault.jpg" alt="Watch the video" width="600">
+</a>
+
+
 ---
 
 ## 🔗 **Live Demo**
