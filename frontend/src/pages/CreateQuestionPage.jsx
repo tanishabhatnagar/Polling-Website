@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import toast, { Toaster } from "react-hot-toast"; // ✅ Import toaster
 import socket from "../socket";
 import ChatWidget from "./ChatWidget";
 
@@ -23,8 +24,16 @@ function CreateQuestionPage() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+
     const correctAnswer = options[correctIndex];
+
     if (!question.trim() || !correctAnswer) return;
+
+    if (correctIndex === null) {
+      toast.error("⚠️ Please select one correct option.");
+      return;
+    }
+
     const newPoll = {
       question: question.trim(),
       options: options.map((opt) => opt.trim()),
@@ -32,6 +41,7 @@ function CreateQuestionPage() {
       timeLimit,
       createdAt: new Date().toISOString(),
     };
+
     socket.emit("create-question", newPoll);
     setPollHistory((prev) => [...prev, newPoll]);
     navigate("/teacher/view-results");
@@ -47,6 +57,7 @@ function CreateQuestionPage() {
 
   return (
     <div className="min-h-screen flex flex-col items-center bg-gradient-to-b from-white to-slate-100 text-dark p-4 sm:p-6">
+      <Toaster position="top-center" reverseOrder={false} /> {/* ✅ Toaster here */}
       <h2 className="text-3xl sm:text-4xl font-bold text-primary mb-2">Create a Quiz</h2>
       <p className="text-gray-600 mb-6 text-center text-sm sm:text-base">
         Try creating a quiz! Add your question, options, mark the correct answer, and set a time limit.
@@ -63,7 +74,6 @@ function CreateQuestionPage() {
             onChange={(e) => setTimeLimit(Number(e.target.value))}
             className="border border-gray-300 px-3 py-2 rounded-md text-sm focus:ring-2 focus:ring-secondary"
           >
-            
             <option value={20}>20 sec</option>
             <option value={30}>30 sec</option>
             <option value={45}>45 sec</option>
