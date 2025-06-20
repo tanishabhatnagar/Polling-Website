@@ -1,6 +1,9 @@
+
+
+
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import toast, { Toaster } from "react-hot-toast"; // ✅ Import toaster
+import toast, { Toaster } from "react-hot-toast";
 import socket from "../socket";
 import ChatWidget from "./ChatWidget";
 
@@ -11,19 +14,34 @@ function CreateQuestionPage() {
   const [correctIndex, setCorrectIndex] = useState(null);
   const [timeLimit, setTimeLimit] = useState(30);
   const [pollHistory, setPollHistory] = useState([]);
+  const [isPollActive, setIsPollActive] = useState(false);
 
   useEffect(() => {
     socket.emit("get-poll-history");
     socket.on("poll-history", (history) => {
       setPollHistory(history);
     });
+
+    socket.emit("get-current-data");
+    socket.on("new-question", (data) => {
+      const now = Date.now();
+      const endTime = data.startTime + data.timeLimit * 1000;
+      setIsPollActive(now < endTime);
+    });
+
     return () => {
       socket.off("poll-history");
+      socket.off("new-question");
     };
   }, []);
 
   const handleSubmit = (e) => {
     e.preventDefault();
+
+    if (isPollActive) {
+      toast.error("🕒 Please wait for the current poll to end before creating a new one.");
+      return;
+    }
 
     const correctAnswer = options[correctIndex];
 
@@ -40,6 +58,7 @@ function CreateQuestionPage() {
       correctAnswer: correctAnswer.trim(),
       timeLimit,
       createdAt: new Date().toISOString(),
+      startTime: Date.now(),
     };
 
     socket.emit("create-question", newPoll);
@@ -57,7 +76,7 @@ function CreateQuestionPage() {
 
   return (
     <div className="min-h-screen flex flex-col items-center bg-gradient-to-b from-white to-slate-100 text-dark p-4 sm:p-6">
-      <Toaster position="top-center" reverseOrder={false} /> {/* ✅ Toaster here */}
+      <Toaster position="top-center" reverseOrder={false} />
       <h2 className="text-3xl sm:text-4xl font-bold text-primary mb-2">Create a Quiz</h2>
       <p className="text-gray-600 mb-6 text-center text-sm sm:text-base">
         Try creating a quiz! Add your question, options, mark the correct answer, and set a time limit.
@@ -130,9 +149,15 @@ function CreateQuestionPage() {
 
         <button
           type="submit"
-          className="bg-primary hover:bg-secondary text-white px-6 py-3 rounded-xl mt-6 w-full font-semibold text-lg transition-all"
+          disabled={isPollActive}
+         
+
+          className={`${
+  isPollActive ? "bg-gray-400 cursor-not-allowed" : "bg-primary hover:bg-secondary"
+} text-white px-6 py-3 rounded-xl mt-6 w-full font-semibold text-lg transition-all`}
+
         >
-          Ask the Poll
+          {isPollActive ? "Waiting for current poll to finish..." : "Ask the Poll"}
         </button>
       </form>
 
@@ -144,7 +169,9 @@ function CreateQuestionPage() {
         </p>
       )}
 
-      <div className="w-full max-w-xl mt-10 px-2">
+      {/* Poll History unchanged */}
+
+       <div className="w-full max-w-xl mt-10 px-2">
         <h3 className="text-2xl font-bold text-dark mb-6">🕘 Poll History</h3>
         {pollHistory.length === 0 ? (
           <p className="text-gray-500 text-sm italic">No past polls yet.</p>

@@ -24,7 +24,11 @@ export default function StudentPollPage() {
       setSelected(null);
       setSubmitted(false);
       setResults(null);
-      setRemainingTime(data.timeLimit);
+      const now = Date.now();
+const elapsed = Math.floor((now - data.startTime) / 1000); // seconds passed
+const remaining = data.timeLimit - elapsed;
+setRemainingTime(remaining > 0 ? remaining : 0); // 🧠 Ensure no negative time
+
     });
 
     socket.on("poll-update", (data) => {
