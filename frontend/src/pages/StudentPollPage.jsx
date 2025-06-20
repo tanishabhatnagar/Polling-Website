@@ -63,33 +63,30 @@ export default function StudentPollPage() {
           {!submitted ? (
             <>
               <h2 className="text-2xl font-semibold text-primary mb-2">
-                Answer the Poll
-              </h2>
-              <p className="text-sm text-gray-500 mb-4">
-                Time Remaining: {remainingTime}s
-              </p>
-              <ul className="space-y-3 mb-6">
-                {poll.options.map((opt, i) => (
-                  <li
-                    key={i}
-                    onClick={() => setSelected(opt)}
-                    className={`cursor-pointer px-4 py-2 border rounded ${
-                      selected === opt
-                        ? "bg-blue-100 border-blue-500"
-                        : "bg-gray-50"
-                    } hover:bg-blue-50`}
-                  >
-                    {opt}
-                  </li>
-                ))}
-              </ul>
-              <button
-                onClick={submitAnswer}
-                disabled={submitted}
-                className="w-full bg-primary hover:bg-secondary text-white font-medium px-4 py-2 rounded-lg transition"
-              >
-                Submit Answer
-              </button>
+  Answer the Poll
+</h2>
+<p className="text-sm text-gray-500 mb-1">
+  Time Remaining: {remainingTime}s
+</p>
+
+<h3 className="text-lg font-medium text-gray-800 mb-3">{poll.question}</h3> {/* <- Added line */}
+
+<ul className="space-y-3 mb-6">
+  {poll.options.map((opt, i) => (
+    <li
+      key={i}
+      onClick={() => setSelected(opt)}
+      className={`cursor-pointer px-4 py-2 border rounded ${
+        selected === opt
+          ? "bg-blue-100 border-blue-500"
+          : "bg-gray-50"
+      } hover:bg-blue-50`}
+    >
+      {opt}
+    </li>
+  ))}
+</ul>
+
             </>
           ) : (
             <>
